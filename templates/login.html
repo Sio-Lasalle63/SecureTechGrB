@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Connexion</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Connexion</h2>
+        <p><img src="/static/logo.png" class="logo" /></p>
+        <form method="post">
+            <input name="username" placeholder="Nom utilisateur">
+            <input name="password" type="password" placeholder="Mot de passe">
+            <button type="submit">Se connecter</button>
+        </form>
+
+        <p class="message">{{ message }}</p>
+    </div>
+</body>
+</html>

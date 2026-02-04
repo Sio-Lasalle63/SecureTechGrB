@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profil utilisateur</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>{{ prenom }} {{ nom }} </h2>
+        <div class="profile">
+            <img src="{{ avatar }}" class="avatar">
+
+            <p><b>Email :</b> {{ email }}</p>
+            <p><b>Identifiant :</b> {{ username }}</p>
+        </div>
+        <a href="/change-password">
+            <button>Modifier mon mot de passe</button>
+        </a>
+        <a href="/logout"><button>Se déconnecter</button></a>
+
+    </div>
+</body>
+</html>
