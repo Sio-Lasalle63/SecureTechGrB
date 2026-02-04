@@ -107,12 +107,23 @@ def change_password():
     message = ""
     username = session["username"]
     if request.method == "POST":
-        new_password = request.form["new_password"]
-        db = get_db()
-        cursor = db.cursor()
-        cursor.execute("UPDATE users SET password = ? WHERE username = ?",(hacherUnMotDePasse(new_password), username))
-        db.commit()
-        message = "Mot de passe modifié."
+        old_password = request.form["old_password"]
+        new_password1 = request.form["new_password1"]
+        new_password2 = request.form["new_password2"]
+        if new_password1==new_password2 :
+            db = get_db()
+            cursorOldPass = db.cursor()
+            cursorOldPass.execute("Select password from users WHERE username = ?", (username,))
+            oldPassBD = cursorOldPass.fetchone()[0]
+            if oldPassBD == hacherUnMotDePasse(old_password) :
+                cursorUpdate = db.cursor()
+                cursorUpdate.execute("UPDATE users SET password = ? WHERE username = ?",(hacherUnMotDePasse(new_password1), username))
+                db.commit()
+                message = "Mot de passe modifié."
+            else:
+                message = "L'ancien mot de passe ne correspond pas"
+        else:
+            message = "Les 2 mots de passe ne sont pas identiques."
     return render_template("change_password.html",  username=username, message=message)
 
 # -----------------------------
