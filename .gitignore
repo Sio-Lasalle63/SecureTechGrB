@@ -181,3 +181,5 @@ cython_debug/
 .cursorindexingignore
 users.db
 Scripts
+.gitattributes
+pyvenv.cfg
