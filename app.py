@@ -46,7 +46,7 @@ def existInDb( newPassword ):
     cursor.execute("""Select count(*) 
                  from old_passwords 
                  where id_user = ? and old_password=?""" ,
-                 (session["id"] , newPassword))
+                 (session["id"] , hacherUnMotDePasse( newPassword)))
     nb = cursor.fetchone()[0]
     return nb==1
     
