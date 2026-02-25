@@ -45,11 +45,14 @@ button:hover {
 .message {
     margin-top: 10px;
     text-align: center;
-    color: #d9534f;
 }
 
 .success {
     color: #28a745;
+}
+
+.fail {
+    color: #d9534f;
 }
 
 a {
