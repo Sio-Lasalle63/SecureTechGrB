@@ -32,6 +32,26 @@ def containsDigit( mot ) :
             return True
     return False
 
+def isPasswordForbidden( mdp ):
+    with open("passwords_interdits.txt", "r" ) as fichier :
+        for ligne in fichier :
+            motInterdit = ligne.strip()
+            if motInterdit == mdp :
+                return True
+    return False
+
+def existInDb( newPassword ):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("""Select count(*) 
+                 from old_passwords 
+                 where id_user = ? and old_password=?""" ,
+                 (session["id"] , newPassword))
+    nb = cursor.fetchone()[0]
+    return nb==1
+    
+    
+    
 
 # -----------------------------
 # Gestion de la base de données
@@ -63,6 +83,12 @@ def init_db():
             prenom TEXT,
             email TEXT,
             avatar TEXT) """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS old_passwords (
+            id_user INTEGER,
+            old_password TEXT,
+            PRIMARY KEY ( id_user , old_password )
+        ) """)
     cursor.execute("""
         INSERT OR IGNORE INTO users 
         (username, password, nom, prenom, email, avatar)
@@ -103,6 +129,7 @@ def login():
         user = cursor.fetchone()
         if user:
             session["username"] = username
+            session["id"] = user[0]
             return redirect("/home")
         else:
             message = "Identifiants incorrects."
@@ -154,14 +181,22 @@ def change_password():
                 if oldPassBD == hacherUnMotDePasse(old_password) :
                     if containsUppercase(new_password1) :
                         if containsDigit( new_password1 ):
-                            cursor.execute("UPDATE users SET password = ? WHERE username = ?",(hacherUnMotDePasse(new_password1), username))
-                            db.commit()
-                            message = "Mot de passe modifié."
-                            status = "success"
+                            if not isPasswordForbidden ( new_password1 ):
+                                if not existInDb( new_password1 ):
+                                    cursor.execute("UPDATE users SET password = ? WHERE username = ?",(hacherUnMotDePasse(new_password1), username))
+                                    cursor.execute("""INSERT into old_passwords(id_user,old_password)
+                                                   values (?,?)""" , (session["id"],hacherUnMotDePasse(old_password)))
+                                    db.commit()
+                                    message = "Mot de passe modifié."
+                                    status = "success"
+                                else:
+                                    message = "Ce mot de passe est interdit car déjà utilisé par vous"
+                            else:
+                                message = "Ce mot de passe est interdit"
                         else:
-                            message = "Le mot de passe doit contenir au moins 1 chiffre"        
+                            message = "Le mot de passe doit contenir au moins 1 chiffre"
                     else: 
-                        message = "Le mot de passe doit contenir au moins 1 majuscule"    
+                        message = "Le mot de passe doit contenir au moins 1 majuscule"
                 else:
                     message = "L'ancien mot de passe ne correspond pas"
             else:
